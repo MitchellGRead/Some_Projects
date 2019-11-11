@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Tip Calculator</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="main-container">
+        <h1>Tip Calculator</h1>
+        <div id="inputs-container">
+            <form action="">
+                <p>How much was the bill?</p>
+                <p>$ <input id="bill-total" type="number" placeholder="$ Amount" min="0"></p>
+                
+                <p>How much will you tip?</p>
+                <select name="" id="tip-amount">
+                    <option disabled selected value="0">Select an amount</option>
+                    <option value="0">0%</option>
+                    <option value="0.05">5%</option>
+                    <option value="0.10">10%</option>
+                    <option value="0.15">15%</option>
+                    <option value="0.20">20%</option>
+                    <option value="0.25">25%</option>
+                    <option value="0.30">30%</option>
+                </select>
+
+                <p>How many people splitting the bill?</p>
+                <input id="num-people" type="number" min="0" placeholder="Number of People">
+
+                <button id="calc-tip-button" type="button">Calculate</button>
+            </form>
+        </div>
+        <!-- end inputs container -->
+
+        <div id="calculations-container">
+            <span id="result"></span>
+        </div>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="tipCalc.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,27 @@
+.main-container {
+    box-shadow: 1px 1px 10px 4px;
+    border-radius: 6px;
+    background: lightgrey;
+    padding: 10px;
+}
+
+#grade-table {
+    margin: auto;
+    margin-bottom: 20px;
+    width: 30%;
+    border-radius: 6px;
+}
+
+#grade-table input {
+    border-radius: 3px;
+    border: grey 1px solid;
+    width: 90px;
+}
+
+.btn {
+    margin-bottom: 4px;
+}
+
+#average-grade {
+    margin-left: 15px;
+}
