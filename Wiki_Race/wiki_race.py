@@ -11,46 +11,113 @@ def main():
     end_word = 'apples'
     url_attempts = 20
 
-    results = begin_wiki_hunt(start_word, end_word, url_attempts)
+    results = wiki_hunt(start_word, end_word, url_attempts)
+
+    print(results)
 
     return
 
 
-def begin_wiki_hunt(start_word, end_word, url_attempts):
+def wiki_hunt(current_word, end_word, url_attempts):
     main_url = 'https://en.wikipedia.org/wiki/'
     datamuse = Datamuse()
 
     results = {
-        'start_word': start_word,
+        'start_word': current_word,
         'end_word': end_word,
-        'found_path': [],
+        'current_path': [current_word],
         'successful': False,
     }
 
-    # start_links = wikipedia.WikipediaPage(start_word).links 
-    # end_links = wikipedia.WikipediaPage(end_word).links
-
-    # start_links = set(start_links)
-    # end_links = set(end_links)
-
-    # link_intersects = start_links.intersection(end_links)
-
-    with open('same_links.txt') as f:
-        link_interects = f.read().splitlines()
-
-
-    # start_similar = datamuse.get_similar_meaning(start_word)
+    end_page, end_links = get_wiki_info(end_word)
     # end_similar = datamuse.get_similar_meaning(end_word)
+    with open('end_sim.json') as f:
+        end_similar = json.load(f)
+
+    for i in range(url_attempts):
+        # Get the current word wiki page links
+        curr_page, curr_links = get_wiki_info(current_word)
+
+        if curr_page == end_page:
+            results['successful'] = True 
+            break
+
+        # Look for potential intersections with the target page links
+        # link_intersects = get_link_intersects(curr_links, end_links)
+        with open('same_links.txt') as f:
+            link_intersects = f.read().lower().splitlines()
+
+        if link_intersects != []:
+            words_similar = find_similar_words(current_word, end_similar, link_intersects)
+
+            if words_similar:
+                highest_rank = max(words_similar, key=words_similar.get)
+
+                current_word = highest_rank
+                print(current_word)
+                results['current_path'].append(current_word)
+                continue
+            
+
+
+    return results
+
+
+def find_similar_words(current_word, end_similar, link_intersects):
+    datamuse = Datamuse()
+
+    # Get words similar to the start and end
+    # start_similar = datamuse.get_similar_meaning(current_word)
 
     with open('start_sim.json') as f:
         start_similar = json.load(f)
 
-    with open('end_sim.json') as f:
-        end_similar = json.load(f)
-
+    # Find all the similar words that match with the intersection totalling duplicates scores
+    summed_relations = intersect_similar_words(start_similar, end_similar, link_intersects)
     
+    return summed_relations
 
-    return results
+
+def intersect_similar_words(current_similar, end_similar, link_interects):
+    summed_relations = {}
+
+    # Find the similar words for our target page matching with our common links
+    for word in end_similar:
+        if word['word'] in link_interects:
+            common_word = word['word']
+
+            if not common_word in summed_relations:
+                summed_relations[common_word] = word['score']
+            else:
+                summed_relations[common_word] += word['score']
+
+    # Sum/add the similar words.
+    for word in current_similar:
+        if word['word'] in link_interects:
+            valid = word['word']
+
+            if not valid in summed_relations:
+                summed_relations[valid] = word['score']
+            else:
+                summed_relations[valid] += word['score']
+
+    return summed_relations
+
+
+def get_link_intersects(page_one_links, page_two_links):
+    page_one_links = set(page_one_links)
+    page_two_links = set(page_two_links)
+
+    intersect = list(page_one_links.intersection(page_two_links))
+
+    return intersect
+
+
+def get_wiki_info(wiki_title):
+    wiki_page = wikipedia.page(title=wiki_title)
+    # links = [link.lower() for link in wiki_page.links]
+    links = ['dfadf']
+    return (wiki_page, links)
 
 
 if __name__ == "__main__":
