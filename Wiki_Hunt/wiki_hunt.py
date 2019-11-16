@@ -25,6 +25,17 @@ def main():
 
 
 def wiki_hunt(current_word, end_word, url_attempts):
+    '''
+    Main driver for the wiki hunter
+    
+    Args:
+        current_word (str): current word that we are starting with to represent the starting wiki page 
+        end_word (str): end word that we want to get to for the winning wiki page 
+        url_attempts (int): how many times to try finding the ending page
+    
+    Returns:
+        dict: dictionary of the results from the hunt.
+    '''
     datamuse = Datamuse()
 
     results = {
@@ -81,6 +92,17 @@ def wiki_hunt(current_word, end_word, url_attempts):
 
 
 def find_next_word(words_related, words_similar):
+    '''
+    takes the related words and similar words with their scores and trys to determine 
+    which is the best option for the next wiki page to go to based off the highest score.
+    
+    Args:
+        words_related (dict): dictionary of words for keys with a related score
+        words_similar (dict): dictionary of words for keys with a related score
+    
+    Returns:
+        str: best option to choose for the next wiki page
+    '''
     if words_related and words_similar:
         highest_ranked_similar = max(words_similar, key=words_similar.get)
         highest_ranked_related = max(words_related, key=words_related.get)
@@ -100,6 +122,20 @@ def find_next_word(words_related, words_similar):
 
 
 def find_matching_words(current_word, end_api_words, word_type, visited_pages, link_interects=[]):
+    '''
+    finds where there are similar words between the current wiki page and the end wiki page.
+    If the two pages share the same links on their wiki pages we put more emphasis on said word to navigate to.
+    
+    Args:
+        current_word (str): wiki page we want to go to next
+        end_api_words (str): ending wiki page
+        word_type (str): can be either "similar" or "related" to specify what type of words we want
+        visited_pages (list): list of wiki pages we have already been to
+        link_interects (list, optional): intersection of links (words) from the two wiki pages. Defaults to [].
+    
+    Returns:
+        dict: dictionary of words for keys with respective scores
+    '''
     datamuse = Datamuse()
     matching_words = {}
 
@@ -129,6 +165,16 @@ def find_matching_words(current_word, end_api_words, word_type, visited_pages, l
 
 
 def remove_visited_pages(visited_pages, word_rankings):
+    '''
+    removes visited words from the pages we have already been to
+    
+    Args:
+        visited_pages (list): list of wiki pages we have been to
+        word_rankings (dict): dictionary of words for keys that are next candidates for the next wiki page
+    
+    Returns:
+        dict: trimmed down word_rankings no longer containing visited pages
+    '''
     for page in visited_pages:
         if page in word_rankings:
             del word_rankings[page]
@@ -137,10 +183,31 @@ def remove_visited_pages(visited_pages, word_rankings):
 
 
 def extract_dict_words(datamuse_dict):
+    '''
+    gets a list of words from a datamuse dictionary
+    
+    Args:
+        datamuse_dict (dict): list of dictionaries with "word" as a key value
+    
+    Returns:
+        list: list of word key values from the list of dictionaries
+    '''
     return [entry['word'] for entry in datamuse_dict]
 
 
 def check_winning_page(curr_page, curr_links, end_page, results):
+    '''
+    checks for if we are on a winning page or not by comparing wiki page objects or if the end page word is in our current pages links
+    
+    Args:
+        curr_page (wikipedia object): wiki object of the current word we are looking at
+        curr_links (list): list of links from the wiki page
+        end_page (wikipedia  object): wiki object of the end word we are trying to get to
+        results (dict): dictionary of results specified in wiki_hunt    
+    
+    Returns:
+        dict: returns the results object
+    '''
     if curr_page == end_page:
         results['successful'] = True
     elif end_page.title.lower() in curr_links:
@@ -151,6 +218,16 @@ def check_winning_page(curr_page, curr_links, end_page, results):
 
 
 def get_link_intersects(page_one_links, page_two_links):
+    '''
+    gets the intersection of links between two pages
+    
+    Args:
+        page_one_links (list): list of wiki links
+        page_two_links (list): list of wiki links
+    
+    Returns:
+        list: list of the intersection between the two pages
+    '''
     page_one_links = set(page_one_links)
     page_two_links = set(page_two_links)
 
@@ -159,6 +236,15 @@ def get_link_intersects(page_one_links, page_two_links):
 
 
 def get_wiki_info(wiki_title):
+    '''
+    gets a wiki page and its links using the wikipedia library
+    
+    Args:
+        wiki_title (str): word specifying the title of the wiki page
+    
+    Returns:
+        (wikipedia object, list): the wiki page object itself and the links on the respective page
+    '''
     wikipedia.set_rate_limiting(True)
 
     try:
