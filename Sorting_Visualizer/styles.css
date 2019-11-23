@@ -19,3 +19,7 @@ input, label {
 #arr-size {
     background: #252830;
 }
+
+#algo-select {
+    width: 120px;
+}

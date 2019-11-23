@@ -19,7 +19,7 @@
         <form class="form-inline justify-content-center">
             <div class="col col-2 my-1">
                 <label for="arr-size">Array Size: </label>
-                <input id="arr-size" class="user-controls form-control-range" type="range" min="10" max="100" step="1" value="10" name="arr-size">
+                <input id="arr-size" class="user-controls form-control-range" type="range" min="20" max="500" step="1" value="10" name="arr-size">
             </div>
 
             <button type="button" id="gen-arr" class="btn btn-primary mx-2">Generate Array</button>
@@ -33,9 +33,62 @@
 
             <button type="button" id="start-sort" class="btn btn-success mx-2">Start Sorting</button>
             <button type="button" id="stop-sort" class="btn btn-danger">Stop Sorting</button>
-        </form>
 
+        </form>
     </div>
+
+    <div class="modal fade" id="error-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Please generate an array to sort first.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <nav class="navbar navbar-light navbar-1 white">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#hamburger-inputs"
+            aria-controls="hamburger-inputs" aria-expanded="false" aria-label="Toggle navigation"><span
+                class="navbar-toggler-icon"></span></button>
+    
+        <div class="collapse navbar-collapse" id="hamburger-inputs">
+    
+
+            <div class="col col-2 ">
+                <label for="arr-size">Array Size: </label>
+                <input id="arr-size" class="user-controls form-control-range" type="range" min="20" max="500" step="1"
+                    value="10" name="arr-size">
+            </div>
+    
+            <div class="col col-2">
+                <button type="button" id="gen-arr" class="btn btn-primary m-2">Generate Array</button>
+            </div>
+    
+            <div class="col col-2">
+                <select name="algo-select" id="algo-select" class="custom-select">
+                    <option value="quick_sort" autofocus>Quick Sort</option>
+                    <option value="merge_sort" disabled>Merge Sort</option>
+                    <option value="heapsort" disabled>Heapsort</option>
+                    <option value="selection_sort" disabled>Selection Sort</option>
+                </select>
+            </div>
+    
+            <div class="col col-2">
+                <button type="button" id="start-sort" class="btn btn-success my-2">Start Sorting</button>
+                <button type="button" id="stop-sort" class="btn btn-danger">Stop Sorting</button>
+            </div>
+
+        </nav> -->
 
     <div class="container">
         <div class="row justify-content-center">
@@ -55,7 +108,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
-    <script src="page_layout.js"></script>
     <script src="sorter.js"></script>
+    <script src="input_handler.js"></script>
 </body>
 </html>
