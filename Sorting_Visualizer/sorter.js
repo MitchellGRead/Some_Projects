@@ -21,8 +21,11 @@ class visualizer {
             'quick_sort': quick_sort,
             'merge_sort': merge_sort,
             'selection_sort': selection_sort,
-            // 'insertion_sort': insertion_sort,
-            // 'heap_sort': heap_sort,
+            'insertion_sort': insertion_sort,
+            'heap_sort': heap_sort,
+            // 'cocktail_sort':cocktail_sort,
+            // 'radix_sort': radix_sort,
+            // 'bingo_sort': bingo_sort,
         };
 
         return avail_algos[algo_input];
@@ -136,6 +139,28 @@ function draw_array(canvas, arr, color) {
     }
 }
 
+
+function heap_sort(animation, arr) {
+    
+}
+
+
+function insertion_sort(animation, arr) {
+    let j = 0;
+    for (let i = 1; i < arr.length + 1; i++) {
+        j = i - 1;
+        while (j > 0 && arr[j - 1] > arr[j]) {
+            animation.add_compare_action(j - 1, j);
+
+            swap(arr, j, j - 1);
+            animation.add_swap_action(j, j - 1);
+
+            j -= 1;
+        }
+    }
+}
+
+
 function selection_sort(animation, arr) {
     let min = 0;
     for (let i = 0; i < arr.length; i++) {
@@ -233,13 +258,3 @@ function swap(arr, i, j) {
     arr[i] = arr[j];
     arr[j] = temp;
 }
-
-
-// /**
-//  * TODO
-//  * write sorting algorithm
-//  * ensure sorting actions 
-//  * step through each sorting action and update the canvas
-//  *      consume the action (pop) once it has been animated
-//  * Look into several algos and see how they work and what is needed!!
-//  */
