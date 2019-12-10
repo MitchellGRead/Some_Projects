@@ -19,21 +19,25 @@
         <form class="form-inline justify-content-center">
             <div class="col col-2 my-1">
                 <label for="arr-size">Array Size: </label>
-                <input id="arr-size" class="user-controls form-control-range" type="range" min="20" max="500" step="1" value="10" name="arr-size">
+                <input id="arr-size" class="user-controls form-control-range" type="range" min="10" max="500" step="1" value="10" name="arr-size">
             </div>
 
             <button type="button" id="gen-arr" class="btn btn-primary mx-2">Generate Array</button>
 
             <select name="algo-select" id="algo-select" class="custom-select">
-                <option value="quick_sort" autofocus>Quick Sort</option>
+                <option value="selection_sort">Selection Sort</option>
+                <option value="quick_sort">Quick Sort</option>
+                <option value="insertion_sort" disabled>Insertion Sort</option>
                 <option value="merge_sort" disabled>Merge Sort</option>
                 <option value="heapsort" disabled>Heapsort</option>
-                <option value="selection_sort" disabled>Selection Sort</option>
             </select>
 
             <button type="button" id="start-sort" class="btn btn-success mx-2">Start Sorting</button>
             <button type="button" id="stop-sort" class="btn btn-danger">Stop Sorting</button>
 
+            <div class="col-2 m-0">
+                <p id="sort-metrics">Comparisons: 0<br> Swaps: 0</p>
+            </div>
         </form>
     </div>
 
@@ -96,7 +100,6 @@
             </canvas>
         </div>
     </div>
-
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

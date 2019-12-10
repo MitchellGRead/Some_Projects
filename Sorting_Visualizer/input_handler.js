@@ -44,7 +44,7 @@ function create_arr() {
     }
 
     let canvas = $("#arr-display")[0];
-    animation_controller = new sorting(canvas, arr_to_sort);
+    animation_controller = new visualizer(canvas, arr_to_sort);
 }
 $("#gen-arr").click(create_arr);
 
@@ -54,14 +54,19 @@ function run_animation() {
             keyboard: true,
             focus: true,
         });
-        return
+        return;
     }
 
+    if (animation_controller.get_finished()) {
+        return;
+    }
     let sorting_algo = animation_controller.get_sorting_func(algo_to_use);
-
-    sorting_algo(animation_controller);
     
-    animation_controller.animate_sorting(500);
+    let sort_data = animation_controller.get_sort_data();
+    sorting_algo(animation_controller, sort_data);
+
+    animation_controller.animate_sorting(animation_controller, 10);
+
 }
 $("#start-sort").click(run_animation);
 

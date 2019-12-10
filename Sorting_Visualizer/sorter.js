@@ -2,174 +2,236 @@ const DEFAULT_COLOR = '#61b3ff';
 const COMPARE_COLOR = '#fa4848';
 const SWAP_COLOR = '#67cc56';
 
-class sorting {
+class visualizer {
     constructor(canvas, arr) {
         this.canvas = canvas;
         this.sort_data = arr;
-        this.display_data = [];
-        this.color = [];
+        this.display_data = [...arr];
+        this.color = Array(arr.length).fill(DEFAULT_COLOR);
         this.actions = [];
+        this.num_swaps = 0;
+        this.num_comps = 0;
+        this.finished = false;
 
-        for (let i = 0; i < arr.length; i++) {
-            this.display_data.push(arr[i]);
-            this.color.push(DEFAULT_COLOR);
-        }
-
-        this.draw_array();
-    }
-
-    draw_array() {
-        let c = this.canvas.getContext('2d');
-        c.clearRect(0, 0, innerWidth, innerHeight);
-
-        let margin = 2;
-        let y_margin = 20;
-        let spacing = this.canvas.width / (margin * this.display_data.length + this.display_data.length + 1);
-        let bar_width = spacing * margin;
-
-        let x = bar_width / 2;
-        for (let i = 0; i < this.display_data.length; i++) {
-            c.fillStyle = this.color[i];
-            c.fillRect(x, this.canvas.height - y_margin, bar_width, -this.display_data[i] * (this.canvas.height - y_margin * 2));
-            x += spacing + bar_width;
-        }
-    }
-    
-    swap(i, j) {
-        this.actions.push(['swap', i, j]);
-        let temp = this.sort_data[i];
-        this.sort_data[i] = this.sort_data[j];
-        this.sort_data[j] = temp;
-    }
-
-    compare(i, j) {
-        /**
-         * Compares if the value at index i is less then the value at index j
-         */
-        this.actions.push(['compare', i, j]);
-        return this.sort_data[i] < this.sort_data[j];
-    }
-
-    less_then(i, j) {
-        /**
-         * See if the value at index i is less then that at index j
-         */
-        return this.compare(i, j);
+        draw_array(this.canvas, this.display_data, this.color);
     }
 
     get_sorting_func(algo_input) {
         let avail_algos = {
             'quick_sort': quick_sort,
             'merge_sort': merge_sort,
+            'selection_sort': selection_sort,
+            // 'insertion_sort': insertion_sort,
+            // 'heap_sort': heap_sort,
         };
 
         return avail_algos[algo_input];
     }
 
-    length() {
-        return this.sort_data.length;
+    get_sort_data() {
+        return this.sort_data;
     }
 
-    print_arr() {
-        console.log(this.sort_data);
+    add_swap_action(i, j) {
+        this.actions.push(['swap', i, j]);
     }
 
-    get_actions() {
-        return this.actions;
+    add_compare_action(i, j) {
+        this.actions.push(['compare', i, j]);
+    }
+    
+    get_swap_count() {
+        return this.num_swaps;
     }
 
-    _sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    get_comp_count() {
+        return this.num_comps;
     }
 
-    async animate_sorting(speed) {
-        if (this.actions.length < 1) {
-            return;
-        }
+    check_status() {
+        return this.actions.length == 0;
+    }
+    
+    set_finished(bool) {
+        this.finished = bool;
+    }
 
-        for (let i = 0; i < this.actions.length; i++) {
-            this._consume_action();
-            this._sleep(speed);
-        }
+    get_finished() {
+        return this.finished;
+    }
+
+
+    animate_sorting(handler, speed) {
+        let id = window.setInterval(function () {
+            if (handler.check_status()) {
+                clearInterval(id);
+                handler.set_finished(true);
+            }
+
+            handler._consume_action();
+            $("#sort-metrics").html("Comparisons: " + handler.get_comp_count() + "<br>" +
+                "Swaps: " + handler.get_swap_count());
+        }, speed);
+
     }
 
     _consume_action() {
         if (this.actions.length < 1) {
+            draw_array(this.canvas, this.display_data, this.color);
             return;
         }
 
         let data = this.actions.shift();
+        console.log(data);
         let action = data[0];
-        let index_i = data[1];
-        let index_j = data[2];
+        let i = data[1];
+        let j = data[2];
         
         if (action == 'swap') {
             // Assign the colors
-            this.color[index_i] = SWAP_COLOR;
-            this.color[index_j] = SWAP_COLOR;
+            this.color[i] = SWAP_COLOR;
+            this.color[j] = SWAP_COLOR;
 
             // Swap the values in display array
-            let temp = this.display_data[index_i];
-            this.display_data[index_i] = this.display_data[index_j];
-            this.display_data[index_j] = temp;
+            let temp = this.display_data[i];
+            this.display_data[i] = this.display_data[j];
+            this.display_data[j] = temp;
+
+            // Increment swap counter
+            this.num_swaps += 1;
         } else if (action == 'compare') {
             //Assign the colors
-            this.color[index_i] = COMPARE_COLOR;
-            this.color[index_j] = COMPARE_COLOR;
+            this.color[i] = COMPARE_COLOR;
+            this.color[j] = COMPARE_COLOR;
+
+            // Increment comparisons counter
+            this.num_comps += 1;
         }
         
         // Redraw the array
-        this.draw_array();
+        draw_array(this.canvas, this.display_data, this.color);
         
         // Reset the colours
-        this.color[index_i] = DEFAULT_COLOR;
-        this.color[index_j] = DEFAULT_COLOR;
+        this.color[i] = DEFAULT_COLOR;
+        this.color[j] = DEFAULT_COLOR;
     }
 
 }
 
-function merge_sort(animation, low, high) {
-    return
+
+function draw_array(canvas, arr, color) {
+    let c = canvas.getContext('2d');
+    c.clearRect(0, 0, innerWidth, innerHeight);
+
+    let margin = 2; // How large of gap between the bars - lower makes gap larger and supports higher array sizes
+    let y_margin = 20; // How far above the canvas to be - lower puts closer to bottom.
+    let spacing = canvas.width / (margin * arr.length + arr.length + 1);
+    let bar_width = spacing * margin;
+
+    let x = spacing;
+    for (let i = 0; i < arr.length; i++) {
+        c.fillStyle = color[i];
+        c.fillRect(x, canvas.height - y_margin, bar_width, -arr[i] * (canvas.height - y_margin * 2));
+        x += spacing + bar_width;
+    }
+}
+
+function selection_sort(animation, arr) {
+    let min = 0;
+    for (let i = 0; i < arr.length; i++) {
+        min = i;
+        for (let j = i + 1; j < arr.length; j++) {
+            if (arr[j] < arr[min]) {
+                min = j;
+                animation.add_compare_action(j, min);
+            }            
+        }
+
+        if (i != min) {
+            swap(arr, i, min);
+            animation.add_swap_action(i, min);
+        }
+    }
 }
 
 
-function quick_sort(animation, low, high) {
-    let arr_length = animation.length();
+function merge_sort(animation, arr) {
+    if (arr.length <= 1) {
+        return arr
+    }
+
+    let mid = Math.ceil(arr.length / 2);
+    let left = arr.slice(0, mid);
+    let right = arr.slice(mid);
+
+    left = merge_sort(animation, left);
+    right = merge_sort(animation, right);
+
+    return merge(left, right);
+}
+
+function merge(animation, left, right) {
+    let res = [];
+    let left_index = 0;
+    let right_index = 0;
+
+    while (left.length > left_index && right.length > right_index) {
+        if (left[left_index] < right[right_index]) {
+            // animation.add_compare_action(left_index, right_index);
+
+            res.push(left[left_index]);
+            left_index += 1;
+        } else if (right[right_index] >= left[left_index]) {
+            // animation.add_compare_action(right_index, left_index);
+
+            res.push(right[right_index]);
+            right_index += 1;
+        }
+    }
+
+    return res.concat(left.slice(left_index)).concat(right.slice(right_index));
+}
+
+
+function quick_sort(animation, arr, low, high) {
     if (low == undefined) {
         low = 0;
     }
 
     if (high == undefined) {
-        high = arr_length - 1;
+        high = arr.length - 1;
     }
 
     if (low < high) {
-        pivot = partition(animation, low, high);
-        quick_sort(animation, low, pivot);
-        quick_sort(animation, pivot + 1, high);
+        pivot = partition(animation, arr, low, high);
+        quick_sort(animation, arr, low, pivot - 1);
+        quick_sort(animation, arr, pivot + 1, high);
     }
 }
 
-function partition(animation, low, high) {
-    pivot_index = Math.floor(low + (high - low) / 2);
-    i = low - 1;
-    j = high + 1;
+function partition(animation, arr, low, high) {
+    pivot_index = low;
+    for (let i = low; i < high; i++) {
+        if (arr[i] < arr[high]) {
+            animation.add_compare_action(i, high);
 
-    while (true) {
-        do {
-            i += 1;
-        } while (animation.less_then(i, pivot_index));
-
-        do {
-            j -= 1;
-        } while (animation.less_then(pivot_index, j));
-
-        if (i >= j) {
-            return j;
+            if (i != pivot_index) {
+                swap(arr, i, pivot_index);
+                animation.add_swap_action(i, pivot_index);
+            }
+            pivot_index += 1;
         }
-
-        animation.swap(i, j);
     }
+    swap(arr, high, pivot_index);
+    animation.add_swap_action(high, pivot_index);
+
+    return pivot_index;
+}
+
+function swap(arr, i, j) {
+    let temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
 }
 
 
