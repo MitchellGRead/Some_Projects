@@ -1,2 +1,2 @@
 # Some_Projects
-These are some projects that are worked on soley by myself. They each remain as individual programs and consist of different ideas that I wanted to program or when I was learning a new skill.
+These are some projects that were worked. They are earch individual programs and consist of different ideas that I wanted to try or when I was learning a new skill.
